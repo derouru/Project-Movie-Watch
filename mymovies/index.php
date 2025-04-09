@@ -1,3 +1,12 @@
+<?php
+session_start();
+
+// redirect the users to the login page if they are not yet logged in
+if (!isset($_SESSION['user_name'])) {
+    header('Location: login.php');
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,6 +18,13 @@
 </head>
 <body>
     <div class="container my-5">
+        <?php
+            if (isset($_SESSION['user_name'])) {
+                // User is logged in, show the logout button
+                echo "<h2>Welcome, " . $_SESSION['user_name'] . "</h2>";
+                echo "<a href='logout.php' class='btn btn-danger'>Logout</a>";
+            }
+        ?>
         <h2>List of Movies</h2>
         <a class="btn btn-primary" href="/mymovies/create.php" role="button">Add Movie</a>
         <br>
