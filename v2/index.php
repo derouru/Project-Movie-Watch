@@ -5,6 +5,9 @@ session_start();
 if (!isset($_SESSION['user_name'])) {
     header('Location: login.php');
 }
+
+// use external AWS RDS connection
+require_once 'database.php';
 ?>
 
 <!DOCTYPE html>
@@ -38,44 +41,26 @@ if (!isset($_SESSION['user_name'])) {
             </thead>
             <tbody>
                 <?php
-                // php variables
-                $servername = "localhost";
-                $username = "root";
-                $password = "";
-                $database = "mymovies";
-                
-                // creating connection
-                $connection = new mysqli($servername, $username, $password, $database);
-                
-                // check connection, display error message if fail
-                if ($connection->connect_error) {
-                    die("Connection failed: " . $connection->connect_error);
-                }
-
-                // read all rows from database table
+                // use $connection from database.php
                 $sql = "SELECT * FROM movies";
-                $result = $connection->query($sql);
+                $result = mysqli_query($connection, $sql);
 
-                // check if query worked
                 if (!$result) {
-                    die("Invalid query: " . $connection->error);
+                    die("Invalid query: " . mysqli_error($connection));
                 }
 
-                // reading data of each row
-                while($row = $result->fetch_assoc()) {
+                while ($row = mysqli_fetch_assoc($result)) {
                     echo "
                     <tr>
-                        <td>$row[id]</td>
-                        <td>$row[name]</td>
-                        <th>$row[watched]</th>
+                        <td>{$row['id']}</td>
+                        <td>{$row['name']}</td>
+                        <td>{$row['watched']}</td>
                         <td>
-                            <a class='btn btn-primary btn-sm' href='/Project-Movie-Watch/mymovies/edit.php?id=$row[id]'>Edit</a>
-                            <a class='btn btn-danger btn-sm' href='/Project-Movie-Watch/mymovies/delete.php?id=$row[id]'>Delete</a>
+                            <a class='btn btn-primary btn-sm' href='Project-Movie-Watch/mymovies/edit.php?id={$row['id']}'>Edit</a>
+                            <a class='btn btn-danger btn-sm' href='Project-Movie-Watch/mymovies/delete.php?id={$row['id']}'>Delete</a>
                         </td>
-                    </tr>
-                    ";
+                    </tr>";
                 }
-                
                 ?>
             </tbody>
         </table>

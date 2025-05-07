@@ -2,9 +2,9 @@
 if ( isset($_GET["id"]) ) {             // if id of the movie exists
     $id = $_GET["id"];                  // read id
 
-    $servername = "localhost";
-    $username = "root";
-    $password = "";
+    $servername = "database-1.cvau6aysoqkt.ap-southeast-2.rds.amazonaws.com";
+    $username = ""; // MODIFY IN EC2
+    $password = ""; // MODIFY IN EC2
     $database = "mymovies";
 
     // creating connection

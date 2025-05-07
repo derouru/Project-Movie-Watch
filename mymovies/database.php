@@ -4,7 +4,7 @@
   $db_server = "localhost";
   $db_user = "root";
   $db_password = "";
-  $db_name = "movie-watch-accounts";
+  $db_name = "mymovies";
   $connection = "";
 
   try {
