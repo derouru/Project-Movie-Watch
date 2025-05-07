@@ -42,7 +42,7 @@ if ( $_SERVER['REQUEST_METHOD'] == 'POST') {
         $successMessage = "Movie added correctly.";
         
         // redirecting user to index file (list of movies), and exit execution of this file
-        header("location: /mymovies/index.php");
+        header("location: index.php");
         exit;
 
     } while (false);
@@ -109,7 +109,7 @@ if ( $_SERVER['REQUEST_METHOD'] == 'POST') {
                     <button type="submit" class="btn btn-primary">Submit</button>
                 </div>
                 <div class="col-sm-3 d-grid">
-                    <a class="btn btn-outline-primary" href="/mymovies/index.php" role="button">Cancel</a>
+                    <a class="btn btn-outline-primary" href="/Project-Movie-Watch/mymovies/index.php" role="button">Cancel</a>
                 </div>
             </div>
         </form>
