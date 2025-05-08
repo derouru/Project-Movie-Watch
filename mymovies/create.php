@@ -1,4 +1,14 @@
 <?php
+// php debugging block
+
+ini_set('display_errors', '1');
+ini_set('display_startup_errors', '1');
+error_reporting(E_ALL);
+?>
+
+<?php
+session_start();
+
 $servername = "localhost";
 $username = "root";
 $password = "";
@@ -9,6 +19,7 @@ $connection = new mysqli($servername, $username, $password, $database);
 
 $name = "";
 $watched = "";
+$user_id = $_SESSION['user_id'];
 
 $errorMessage = "";
 $successMessage = "";
@@ -17,6 +28,7 @@ $successMessage = "";
 if ( $_SERVER['REQUEST_METHOD'] == 'POST') {
     $name = $_POST["name"];
     $watched = $_POST["watched"];
+    $user_id = $_SESSION['user_id'];
 
     // checking if fields are complete 
     do {
@@ -25,10 +37,12 @@ if ( $_SERVER['REQUEST_METHOD'] == 'POST') {
             break;
         }
         
+
         // add new movie to database
-        $sql = "INSERT INTO movies (name, watched) " .
-                "VALUES ('$name', '$watched')";
+        $sql = "INSERT INTO movies (name, watched, user_id) " .
+                "VALUES ('$name', '$watched', '$user_id')";
         $result = $connection->query($sql);
+
 
         // check if query is successful
         if (!$result) {
@@ -38,6 +52,7 @@ if ( $_SERVER['REQUEST_METHOD'] == 'POST') {
 
         $name = "";
         $watched = "";
+        $user_id = $_SESSION['user_id'];
 
         $successMessage = "Movie added correctly.";
         
@@ -74,7 +89,7 @@ if ( $_SERVER['REQUEST_METHOD'] == 'POST') {
             ";
         }
         ?>
-
+        
         <form method="post">
             <div class="row mb-3">
                 <label class="col-sm-3 col-form-label">Name</label>

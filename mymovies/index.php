@@ -1,4 +1,12 @@
 <?php
+// php debugging block
+
+ini_set('display_errors', '1');
+ini_set('display_startup_errors', '1');
+error_reporting(E_ALL);
+?>
+
+<?php
 session_start();
 
 // redirect the users to the login page if they are not yet logged in
@@ -68,12 +76,12 @@ if (!isset($_SESSION['user_name'])) {
                 while($row = $result->fetch_assoc()) {
                     echo "
                     <tr>
-                        <td>$row[id]</td>
+                        <td>$row[movie_id]</td>
                         <td>$row[name]</td>
                         <th>$row[watched]</th>
                         <td>
-                            <a class='btn btn-primary btn-sm' href='/Project-Movie-Watch/mymovies/edit.php?id=$row[id]'>Edit</a>
-                            <a class='btn btn-danger btn-sm' href='/Project-Movie-Watch/mymovies/delete.php?id=$row[id]'>Delete</a>
+                            <a class='btn btn-primary btn-sm' href='/Project-Movie-Watch/mymovies/edit.php?movie_id=$row[movie_id]'>Edit</a>
+                            <a class='btn btn-danger btn-sm' href='/Project-Movie-Watch/mymovies/delete.php?movie_id=$row[movie_id]'>Delete</a>
                         </td>
                     </tr>
                     ";
