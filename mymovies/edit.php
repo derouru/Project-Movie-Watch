@@ -52,9 +52,8 @@ if ( $_SERVER['REQUEST_METHOD'] == 'GET') {
 }
 else {
     // POST method: update data of the movie
-
     // we first read the data from the form
-    $movie_id = $_POST["movie_id"]; // Get ID from the hidden input
+    $movie_id = $_POST["movie_id"]; // Get the hidden POST movie_id from the form
     $name = $_POST["name"];
     $watched = $_POST["watched"];
 
@@ -81,7 +80,7 @@ else {
         $successMessage = "Movie updated correctly.";
         
         // redirecting user to index file (list of movies), and exit execution of this file
-        header("location: /mymovies/index.php");
+        header("location: index.php");
         exit;
 
     } while (false);
@@ -117,7 +116,7 @@ else {
         ?>
 
         <form method="post">
-            <input type="hidden" name="id" value="<?php echo $movie_id; ?>">
+            <input type="hidden" name="movie_id" value="<?php echo $movie_id; ?>">
             <div class="row mb-3">
                 <label class="col-sm-3 col-form-label">Name</label>
                 <div class="col-sm-6">
