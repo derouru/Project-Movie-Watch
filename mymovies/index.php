@@ -43,6 +43,9 @@ if (!isset($_SESSION['user_name'])) {
                 $username = "root";
                 $password = "";
                 $database = "mymovies";
+
+                // Get the user_id
+                $user_id = $_SESSION['user_id'];
                 
                 // creating connection
                 $connection = new mysqli($servername, $username, $password, $database);
@@ -53,7 +56,7 @@ if (!isset($_SESSION['user_name'])) {
                 }
 
                 // read all rows from database table
-                $sql = "SELECT * FROM movies";
+                $sql = "SELECT * FROM movies WHERE user_id=$user_id";
                 $result = $connection->query($sql);
 
                 // check if query worked
