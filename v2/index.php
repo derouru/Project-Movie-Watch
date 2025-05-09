@@ -1,13 +1,18 @@
 <?php
+// php debugging block
+
+ini_set('display_errors', '1');
+ini_set('display_startup_errors', '1');
+error_reporting(E_ALL);
+?>
+
+<?php
 session_start();
 
 // redirect the users to the login page if they are not yet logged in
 if (!isset($_SESSION['user_name'])) {
     header('Location: login.php');
 }
-
-// use external AWS RDS connection
-require_once 'database.php';
 ?>
 
 <!DOCTYPE html>
@@ -29,7 +34,7 @@ require_once 'database.php';
             }
         ?>
         <h2>List of Movies</h2>
-        <a class="btn btn-primary" href="/Project-Movie-Watch/mymovies/create.php" role="button">Add Movie</a>
+        <a class="btn btn-primary" href="/Project-Movie-Watch/v2/create.php" role="button">Add Movie</a>
         <br>
         <table class="table">
             <thead>
@@ -41,26 +46,47 @@ require_once 'database.php';
             </thead>
             <tbody>
                 <?php
-                // use $connection from database.php
-                $sql = "SELECT * FROM movies";
-                $result = mysqli_query($connection, $sql);
+                // php variables
+                $servername = "database-1.cvau6aysoqkt.ap-southeast-2.rds.amazonaws.com";
+                $username = ""; // MODIFY IN EC2
+                $password = ""; // MODIFY IN EC2
+                $database = "mymovies";
 
-                if (!$result) {
-                    die("Invalid query: " . mysqli_error($connection));
+                // Get the user_id
+                $user_id = $_SESSION['user_id'];
+                
+                // creating connection
+                $connection = new mysqli($servername, $username, $password, $database);
+                
+                // check connection, display error message if fail
+                if ($connection->connect_error) {
+                    die("Connection failed: " . $connection->connect_error);
                 }
 
-                while ($row = mysqli_fetch_assoc($result)) {
+                // read all rows from database table
+                $sql = "SELECT * FROM movies WHERE user_id=$user_id";
+                $result = $connection->query($sql);
+
+                // check if query worked
+                if (!$result) {
+                    die("Invalid query: " . $connection->error);
+                }
+
+                // reading data of each row
+                while($row = $result->fetch_assoc()) {
                     echo "
                     <tr>
-                        <td>{$row['id']}</td>
-                        <td>{$row['name']}</td>
-                        <td>{$row['watched']}</td>
+                        <td>$row[movie_id]</td>
+                        <td>$row[name]</td>
+                        <th>$row[watched]</th>
                         <td>
-                            <a class='btn btn-primary btn-sm' href='Project-Movie-Watch/mymovies/edit.php?id={$row['id']}'>Edit</a>
-                            <a class='btn btn-danger btn-sm' href='Project-Movie-Watch/mymovies/delete.php?id={$row['id']}'>Delete</a>
+                            <a class='btn btn-primary btn-sm' href='/Project-Movie-Watch/v2/edit.php?movie_id=$row[movie_id]'>Edit</a>
+                            <a class='btn btn-danger btn-sm' href='/Project-Movie-Watch/v2/delete.php?movie_id=$row[movie_id]'>Delete</a>
                         </td>
-                    </tr>";
+                    </tr>
+                    ";
                 }
+                
                 ?>
             </tbody>
         </table>

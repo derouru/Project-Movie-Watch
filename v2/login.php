@@ -38,15 +38,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Check if the user exists
     $fetched_username = '';
     $fetched_password = '';
+    $fetched_user_id = '';
 
     if ($row) {
         // User exists
         $fetched_username = $row['user_name'];
         $fetched_password = $row['password'];
+        $fetched_user_id = $row['user_id'];
 
         // Check if the inputted username and password match the fetched data
         if (($input_username === $fetched_username) && password_verify($input_password, $fetched_password)) {
             $_SESSION['user_name'] = $fetched_username;
+            $_SESSION['user_id'] = $fetched_user_id;
             header("Location: index.php");
             exit();
         } else {

@@ -1,7 +1,17 @@
 <?php
+// php debugging block
+
+ini_set('display_errors', '1');
+ini_set('display_startup_errors', '1');
+error_reporting(E_ALL);
+?>
+
+<?php
+session_start();
+
 $servername = "database-1.cvau6aysoqkt.ap-southeast-2.rds.amazonaws.com";
-$username = ""; //MUST MODIFY
-$password = ""; //MUST MODIFY
+$username = ""; // MODIFY IN EC2
+$password = ""; // MODIFY IN EC2
 $database = "mymovies";
 
 // creating connection
@@ -17,22 +27,22 @@ $successMessage = "";
 if ( $_SERVER['REQUEST_METHOD'] == 'GET') {
     // GET method: show data of the movie
 
-    if ( !isset($_GET["id"]) ) {                    // if id of the movie does not exist
-        header("location: /mymovies/index.php");    // we need to redirect user to index file
+    if ( !isset($_GET["movie_id"]) ) {                    // if id of the movie does not exist
+        header("location: /v2/index.php");    // we need to redirect user to index file
         exit;                                       // and exit execution of this file
     }
 
     // otherwise, we can read the ID of the movie from the request
-    $id = $_GET["id"];
+    $movie_id = $_GET["movie_id"];
 
     // writing and executing sql query to get specific row of movie to be edited
-    $sql = "SELECT * FROM movies WHERE id=$id";
+    $sql = "SELECT * FROM movies WHERE movie_id=$movie_id";
     $result = $connection->query($sql);
     $row = $result->fetch_assoc(); // then we read the data of the movie from the database
 
     // if we don't have any data in the db, redirect user to index page
     if ( !$row ) {                   
-        header("location: /mymovies/index.php");   
+        header("location: /v2/index.php");   
         exit;                                       
     }
 
@@ -42,9 +52,8 @@ if ( $_SERVER['REQUEST_METHOD'] == 'GET') {
 }
 else {
     // POST method: update data of the movie
-
     // we first read the data from the form
-    $id = $_POST["id"]; // Get ID from the hidden input
+    $movie_id = $_POST["movie_id"]; // Get the hidden POST movie_id from the form
     $name = $_POST["name"];
     $watched = $_POST["watched"];
 
@@ -58,7 +67,7 @@ else {
         // update movie in database
         $sql = "UPDATE movies " .
                 "SET name = '$name', watched = '$watched' " . 
-                "WHERE id = $id";
+                "WHERE movie_id = $movie_id";
 
         $result = $connection->query($sql);
 
@@ -71,7 +80,7 @@ else {
         $successMessage = "Movie updated correctly.";
         
         // redirecting user to index file (list of movies), and exit execution of this file
-        header("location: /mymovies/index.php");
+        header("location: index.php");
         exit;
 
     } while (false);
@@ -107,7 +116,7 @@ else {
         ?>
 
         <form method="post">
-            <input type="hidden" name="id" value="<?php echo $id; ?>">
+            <input type="hidden" name="movie_id" value="<?php echo $movie_id; ?>">
             <div class="row mb-3">
                 <label class="col-sm-3 col-form-label">Name</label>
                 <div class="col-sm-6">
@@ -141,7 +150,7 @@ else {
                     <button type="submit" class="btn btn-primary">Submit</button>
                 </div>
                 <div class="col-sm-3 d-grid">
-                    <a class="btn btn-outline-primary" href="Project-Movie-Watch/mymovies/index.php" role="button">Cancel</a>
+                    <a class="btn btn-outline-primary" href="index.php" role="button">Cancel</a>
                 </div>
             </div>
         </form>
