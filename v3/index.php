@@ -69,27 +69,47 @@ if (!isset($_SESSION['user_name'])) {
                 // close url connection
                 curl_close($curl);
 
-                // decode the JSON response
-                $movies = json_decode($response, true);
+                // First decode the outer response
+                $apiResponse = json_decode($response, true);
+
+                // Check if decoding was successful
+                if (json_last_error() !== JSON_ERROR_NONE) {
+                    die("Failed to decode API response: " . json_last_error_msg());
+                }
 
                 // If the response has a 'body' field (e.g., from API Gateway proxy), decode again
                 if (isset($movies['body'])) {
                     $movies = json_decode($movies['body'], true);
                 }
 
+                // Check if body decoding was successful
+                if (json_last_error() !== JSON_ERROR_NONE) {
+                    die("Failed to decode API body: " . json_last_error_msg() . " Body was: " . $apiResponse['body']);
+                }
+
+                // Now check if $movies is an array before looping
+                if (!is_array($movies)) {
+                    die("Unexpected movies format: " . print_r($movies, true));
+                }
+
                 // reading data of each row
-                while($movies as $row) {
+                foreach ($movies as $row) {
                     echo "
                     <tr>
-                        <td>$row[movie_id]</td>
-                        <td>$row[name]</td>
-                        <th>$row[watched]</th>
+                        <td>{$row['movie_id']}</td>
+                        <td>{$row['name']}</td>
+                        <td>{$row['watched']}</td>
                         <td>
-                            <a class='btn btn-primary btn-sm' href='/Project-Movie-Watch/v2/edit.php?movie_id=$row[movie_id]'>Edit</a>
-                            <a class='btn btn-danger btn-sm' href='/Project-Movie-Watch/v2/delete.php?movie_id=$row[movie_id]'>Delete</a>
+                            <a class='btn btn-primary btn-sm' href='/Project-Movie-Watch/v2/edit.php?movie_id={$row['movie_id']}'>Edit</a>
+                            <a class='btn btn-danger btn-sm' href='/Project-Movie-Watch/v2/delete.php?movie_id={$row['movie_id']}'>Delete</a>
                         </td>
                     </tr>
                     ";
+                }
+                
+                // If you want to handle empty results:
+                if (empty($movies)) {
+                    echo "<tr><td colspan='4'>No movies found</td></tr>";
                 }
                 
                 ?>
