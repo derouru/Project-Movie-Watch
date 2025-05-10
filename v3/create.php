@@ -41,12 +41,39 @@ if ( $_SERVER['REQUEST_METHOD'] == 'POST') {
         // add new movie to database
         $sql = "INSERT INTO movies (name, watched, user_id) " .
                 "VALUES ('$name', '$watched', '$user_id')";
-        $result = $connection->query($sql);
+        // $result = $connection->query($sql);
 
 
         // check if query is successful
-        if (!$result) {
-            $errorMessage = "Invalid query: " . $connection->error;
+        // if (!$result) {
+        //     $errorMessage = "Invalid query: " . $connection->error;
+        //     break;
+        // }
+
+        // Prepare the data to send to Lambda
+        $data = [
+            'name' => $name,
+            'watched' => $watched,
+            'user_id' => $user_id
+        ];
+
+        $ch = curl_init('https://cgtyjpqli6.execute-api.ap-southeast-2.amazonaws.com/dev');
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Content-Type: application/json'
+        ]);
+
+        $response = curl_exec($ch);
+        $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        // Decode the response
+        $result = json_decode($response, true);
+
+        if ($httpcode !== 200 || (isset($result['statusCode']) && $result['statusCode'] != 200)) {
+            $errorMessage = "API Error: " . ($result['body'] ?? 'Unknown error');
             break;
         }
 
