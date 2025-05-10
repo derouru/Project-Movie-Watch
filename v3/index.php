@@ -34,7 +34,7 @@ if (!isset($_SESSION['user_name'])) {
             }
         ?>
         <h2>List of Movies</h2>
-        <a class="btn btn-primary" href="/Project-Movie-Watch/v2/create.php" role="button">Add Movie</a>
+        <a class="btn btn-primary" href="/Project-Movie-Watch/v3/create.php" role="button">Add Movie</a>
         <br>
         <table class="table">
             <thead>
@@ -126,8 +126,8 @@ if (!isset($_SESSION['user_name'])) {
                         <td>{$row['name']}</td>
                         <td>{$row['watched']}</td>
                         <td>
-                            <a class='btn btn-primary btn-sm' href='/Project-Movie-Watch/v2/edit.php?movie_id={$row['movie_id']}'>Edit</a>
-                            <a class='btn btn-danger btn-sm' href='/Project-Movie-Watch/v2/delete.php?movie_id={$row['movie_id']}'>Delete</a>
+                            <a class='btn btn-primary btn-sm' href='/Project-Movie-Watch/v3/edit.php?movie_id={$row['movie_id']}'>Edit</a>
+                            <a class='btn btn-danger btn-sm' href='/Project-Movie-Watch/v3/delete.php?movie_id={$row['movie_id']}'>Delete</a>
                         </td>
                     </tr>
                     ";
