@@ -61,7 +61,7 @@ if (!isset($_SESSION['user_name'])) {
                 if ($connection->connect_error) {
                     die("Connection failed: " . $connection->connect_error);
                 }
-
+                
                 // Get the user_id
                 $user_id = $_SESSION['user_id'];
 
@@ -92,13 +92,25 @@ if (!isset($_SESSION['user_name'])) {
                 if (json_last_error() !== JSON_ERROR_NONE) {
                     die("Failed to decode API response: " . json_last_error_msg());
                 }
-                $
-                // If the response has a 'body' field (e.g., from API Gateway proxy), decode again
-                $movies = json_decode($movies['body'], true);
 
-                // Check if body decoding was successful
-                if (json_last_error() !== JSON_ERROR_NONE) {
-                    die("Failed to decode API body: " . json_last_error_msg() . " Body was: " . $apiResponse['body']);
+                $movies = []; // Initialize as empty array
+
+                try {
+                    $apiResponse = json_decode($response, true);
+                    
+                    if (json_last_error() !== JSON_ERROR_NONE) {
+                        throw new Exception("JSON decode error: " . json_last_error_msg());
+                    }
+
+                    if (isset($apiResponse['body'])) {
+                        $movies = json_decode($apiResponse['body'], true);
+                        if (json_last_error() !== JSON_ERROR_NONE) {
+                            throw new Exception("Body JSON decode error: " . json_last_error_msg());
+                        }
+                    }
+                } catch (Exception $e) {
+                    error_log($e->getMessage());
+                    $movies = []; // Ensure it's always an array
                 }
 
                 // Now check if $movies is an array before looping
