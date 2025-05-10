@@ -61,7 +61,7 @@ if (!isset($_SESSION['user_name'])) {
                 if ($connection->connect_error) {
                     die("Connection failed: " . $connection->connect_error);
                 }
-                
+
                 // Get the user_id
                 $user_id = $_SESSION['user_id'];
 
@@ -92,11 +92,9 @@ if (!isset($_SESSION['user_name'])) {
                 if (json_last_error() !== JSON_ERROR_NONE) {
                     die("Failed to decode API response: " . json_last_error_msg());
                 }
-
+                $
                 // If the response has a 'body' field (e.g., from API Gateway proxy), decode again
-                if (isset($movies['body'])) {
-                    $movies = json_decode($movies['body'], true);
-                }
+                $movies = json_decode($movies['body'], true);
 
                 // Check if body decoding was successful
                 if (json_last_error() !== JSON_ERROR_NONE) {
