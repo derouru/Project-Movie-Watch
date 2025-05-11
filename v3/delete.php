@@ -18,18 +18,6 @@ if ( isset($_GET["movie_id"]) ) {             // if id of the movie exists
     $password = ""; // MODIFY IN EC2
     $database = "mymovies";
 
-    // creating connection
-    $connection = new mysqli($servername, $username, $password, $database);
-
-    // // delete movie with specified ID 
-    // $sql = "DELETE FROM movies WHERE movie_id=$movie_id";
-    // $connection->query($sql);
-
-    if ( empty($name) || empty($watched) ) {
-        $errorMessage = "All the fields are required.";
-        break;
-    }
-
     // Prepare the data to send to Lambda
     $data = [
         'movie_id' => $movie_id,
@@ -42,7 +30,7 @@ if ( isset($_GET["movie_id"]) ) {             // if id of the movie exists
     $ch = curl_init('https://cgtyjpqli6.execute-api.ap-southeast-2.amazonaws.com/dev');
     curl_setopt_array($ch, [
         CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_CUSTOMREQUEST => 'DELETE',  // Changed to DELETE method
+        CURLOPT_CUSTOMREQUEST => 'DELETE', 
         CURLOPT_POSTFIELDS => json_encode($data),
         CURLOPT_HTTPHEADER => [
             'Content-Type: application/json',
