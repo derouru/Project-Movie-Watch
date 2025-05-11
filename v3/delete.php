@@ -12,12 +12,7 @@ session_start();
 if ( isset($_GET["movie_id"]) ) {             // if id of the movie exists
     $movie_id = $_GET["movie_id"];                  // read id
     $user_id = $_SESSION['user_id'];
-
-    $servername = "database-1.cvau6aysoqkt.ap-southeast-2.rds.amazonaws.com";
-    $username = ""; // MODIFY IN EC2
-    $password = ""; // MODIFY IN EC2
-    $database = "mymovies";
-
+    
     // Prepare the data to send to Lambda
     $data = [
         'movie_id' => $movie_id,

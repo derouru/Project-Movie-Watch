@@ -14,9 +14,6 @@ $username = ""; // MODIFY IN EC2
 $password = ""; // MODIFY IN EC2
 $database = "mymovies";
 
-// creating connection
-$connection = new mysqli($servername, $username, $password, $database);
-
 // Debug the session user_id
 error_log("User ID from session: " . $_SESSION['user_id']);
 

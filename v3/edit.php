@@ -9,15 +9,6 @@ error_reporting(E_ALL);
 <?php
 session_start();
 
-$servername = "database-1.cvau6aysoqkt.ap-southeast-2.rds.amazonaws.com";
-$username = ""; // MODIFY IN EC2
-$password = ""; // MODIFY IN EC2
-$database = "mymovies";
-
-// creating connection
-$connection = new mysqli($servername, $username, $password, $database);
-
-
 $name = "";
 $watched = "";
 
@@ -34,12 +25,6 @@ if ( $_SERVER['REQUEST_METHOD'] == 'GET') {
 
     // otherwise, we can read the ID of the movie from the request
     $movie_id = $_GET["movie_id"];
-
-    // // writing and executing sql query to get specific row of movie to be edited
-    // $sql = "SELECT * FROM movies WHERE movie_id=$movie_id";
-    // $result = $connection->query($sql);
-    // $row = $result->fetch_assoc(); // then we read the data of the movie from the database
-
     $user_id = $_SESSION['user_id'];
 
     // Call Lambda to get movies for this user
@@ -95,16 +80,6 @@ if ( $_SERVER['REQUEST_METHOD'] == 'GET') {
         $name = $movie['name'] ?? '';
         $watched = $movie['watched'] ?? '';
     }
-
-    // if we don't have any data in the db, redirect user to index page
-    // if ( !$row ) {                   
-    //     header("location: /v2/index.php");   
-    //     exit;                                       
-    // }
-
-    // otherwise, we read the data from the database. then display in the form
-    // $name = $row["name"];
-    // $watched = $row["watched"];
 }
 else {
     // POST method: update data of the movie

@@ -46,22 +46,6 @@ if (!isset($_SESSION['user_name'])) {
             </thead>
             <tbody>
                 <?php
-
-                // php variables
-                $servername = "database-1.cvau6aysoqkt.ap-southeast-2.rds.amazonaws.com";
-                $username = ""; // MODIFY IN EC2
-                $password = ""; // MODIFY IN EC2
-                $database = "mymovies";
-
-                
-                // creating connection
-                $connection = new mysqli($servername, $username, $password, $database);
-                
-                // check connection, display error message if fail
-                if ($connection->connect_error) {
-                    die("Connection failed: " . $connection->connect_error);
-                }
-                
                 // Get the user_id
                 $user_id = $_SESSION['user_id'];
 
