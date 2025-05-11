@@ -56,6 +56,7 @@ else {
     $movie_id = $_POST["movie_id"]; // Get the hidden POST movie_id from the form
     $name = $_POST["name"];
     $watched = $_POST["watched"];
+    $user_id = $_SESSION['user_id']; // Get user_id from session
 
     // check if we have empty fields
     do {
@@ -64,16 +65,50 @@ else {
             break;
         }
         
-        // update movie in database
-        $sql = "UPDATE movies " .
-                "SET name = '$name', watched = '$watched' " . 
-                "WHERE movie_id = $movie_id";
+        // // update movie in database
+        // $sql = "UPDATE movies " .
+        //         "SET name = '$name', watched = '$watched' " . 
+        //         "WHERE movie_id = $movie_id";
 
-        $result = $connection->query($sql);
+        // $result = $connection->query($sql);
 
-        // check if query is successful
-        if (!$result) {
-            $errorMessage = "Invalid query: " . $connection->error;
+        // // check if query is successful
+        // if (!$result) {
+        //     $errorMessage = "Invalid query: " . $connection->error;
+        //     break;
+        // }
+
+        // Prepare the data to send to Lambda
+        $data = [
+            'movie_id' => $movie_id,
+            'name' => $name,
+            'watched' => $watched,
+            'user_id' => $user_id
+        ];
+
+        // Add error logging for the API request
+        error_log("Sending to Lambda: " . print_r($data, true));
+
+        $ch = curl_init('https://cgtyjpqli6.execute-api.ap-southeast-2.amazonaws.com/dev');
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_CUSTOMREQUEST => 'PATCH', // Changed from POST to PATCH
+            CURLOPT_POSTFIELDS => json_encode($data),
+            CURLOPT_HTTPHEADER => [
+                'Content-Type: application/json',
+                'Accept: application/json'
+            ]
+        ]);
+
+        $response = curl_exec($ch);
+        $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        // Decode the response
+        $result = json_decode($response, true);
+        
+        if ($httpcode !== 200 || (isset($result['statusCode']) && $result['statusCode'] != 200)) {
+            $errorMessage = "API Error: " . ($result['body'] ?? 'Unknown error');
             break;
         }
 

@@ -29,26 +29,26 @@ def lambda_handler(event, context):
 
         # Extract parameters with validation
         try:
+            movie = int(body.get('movie_id', 0))
             user = int(body.get('user_id', 0))
             name = str(body.get('name', ''))
             watch = str(body.get('watched', ''))
         except (ValueError, AttributeError) as e:
             raise ValueError(f"Invalid parameter format: {str(e)}")
 
-        # # take in the parameters from the request
-        # user = int(event["user_id"])
-        # watch = unquote(event["watched"])
-        # name = event["name"]
-
         # Validate required fields
-        if user <= 0:
-            raise ValueError("user_id must be a positive integer")
+        if movie <= 0 or user <= 0:
+            raise ValueError("IDs must be positive integers")
         if not name or not watch:
             raise ValueError("name and watched are required")
         
         # query to add
-        insert_query = "INSERT INTO movies (name, watched, user_id) VALUES (%s, %s, %s)"
-        cursor.execute(insert_query, (name, watch, user))
+        edit_query = "UPDATE movies SET name = %s, watched = %s WHERE movie_id = %s AND user_id = %s";
+        cursor.execute(edit_query, (name, watch, movie, user))
+
+        if cursor.rowcount == 0:
+            raise ValueError("No movie found with that ID for this user")
+
         connection.commit()
 
         cursor.close()
@@ -57,7 +57,7 @@ def lambda_handler(event, context):
         return {
                 'statusCode': 200,
                 'body': json.dumps({
-                    'message': 'Movie added successfully',
+                    'message': 'Movie edited successfully',
                 })
             }
     except Exception as e:
@@ -67,6 +67,6 @@ def lambda_handler(event, context):
             'statusCode': 500,
             'body': json.dumps({
                 'error': str(e),
-                'message': 'Failed to add movie'
+                'message': 'Failed to edit movie'
             })
         }
