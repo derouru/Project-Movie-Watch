@@ -57,7 +57,7 @@ if ( $_SERVER['REQUEST_METHOD'] == 'POST') {
         $data = [
             'name' => $name,
             'watched' => $watched,
-            'user_id' => (int)$user_id
+            'user_id' => $user_id
         ];
 
         // Add error logging for the API request
@@ -70,9 +70,18 @@ if ( $_SERVER['REQUEST_METHOD'] == 'POST') {
         curl_setopt($ch, CURLOPT_HTTPHEADER, [
             'Content-Type: application/json'
         ]);
-
+        // Debug: Print the full request (headers + body)
         $response = curl_exec($ch);
         $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+        echo '<pre>';
+        print_r([
+            'Request Headers' => curl_getinfo($ch, CURLINFO_HEADER_OUT),
+            'Request Body' => $jsonPayload, // From Method 1
+            'Response' => $response
+        ]);
+        echo '</pre>';
+
         curl_close($ch);
 
         // Decode the response
