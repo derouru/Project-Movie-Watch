@@ -45,13 +45,12 @@ if ( isset($_GET["movie_id"]) ) {             // if id of the movie exists
     // Decode the response
     $result = json_decode($response, true);
     
-    if ($httpcode !== 200 || (isset($result['statusCode']) && $result['statusCode'] != 200)) {
-        $errorMessage = "API Error: " . ($result['body'] ?? 'Unknown error');
-        break;
+     if ($httpcode !== 200) {
+        $_SESSION['error'] = "Failed to delete movie: " . 
+            ($result['body']['message'] ?? 'Unknown error');
+    } else {
+        $_SESSION['success'] = "Movie deleted successfully";
     }
-
-    $successMessage = "Movie updated correctly.";
-
 }
 
 // redirecting user to index file (list of movies), and exit execution of this file
