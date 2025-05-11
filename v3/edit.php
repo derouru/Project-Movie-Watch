@@ -56,20 +56,32 @@ if ( $_SERVER['REQUEST_METHOD'] == 'GET') {
     $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
 
-    $name = "";
-    $watched = "";
 
     if ($httpcode !== 200) {
         $errorMessage = "Failed to fetch movies";
-        header("location: /v2/index.php");   
-        exit;  
     } else {
-        $movies = json_decode($response, true);
+        // Decode the response properly
+        $responseData = json_decode($response, true);
         
-        // Find the specific movie from the user's movies
+        // Handle both direct Lambda response and API Gateway proxy response
+        $movies = [];
+        if (isset($responseData['body'])) {
+            // API Gateway proxy format
+            $movies = json_decode($responseData['body'], true);
+        } else {
+            // Direct Lambda response
+            $movies = $responseData;
+        }
+
+        // Ensure $movies is an array
+        if (!is_array($movies)) {
+            $movies = [];
+        }
+
+        // Find the specific movie
         $movie = null;
         foreach ($movies as $m) {
-            if ($m['movie_id'] == $movie_id) {
+            if (isset($m['movie_id']) && $m['movie_id'] == $movie_id) {
                 $movie = $m;
                 break;
             }
@@ -80,8 +92,8 @@ if ( $_SERVER['REQUEST_METHOD'] == 'GET') {
             exit;
         }
 
-        $name = $movie['name'];
-        $watched = $movie['watched'];
+        $name = $movie['name'] ?? '';
+        $watched = $movie['watched'] ?? '';
     }
 
     // if we don't have any data in the db, redirect user to index page
