@@ -35,20 +35,64 @@ if ( $_SERVER['REQUEST_METHOD'] == 'GET') {
     // otherwise, we can read the ID of the movie from the request
     $movie_id = $_GET["movie_id"];
 
-    // writing and executing sql query to get specific row of movie to be edited
-    $sql = "SELECT * FROM movies WHERE movie_id=$movie_id";
-    $result = $connection->query($sql);
-    $row = $result->fetch_assoc(); // then we read the data of the movie from the database
+    // // writing and executing sql query to get specific row of movie to be edited
+    // $sql = "SELECT * FROM movies WHERE movie_id=$movie_id";
+    // $result = $connection->query($sql);
+    // $row = $result->fetch_assoc(); // then we read the data of the movie from the database
 
-    // if we don't have any data in the db, redirect user to index page
-    if ( !$row ) {                   
+    $user_id = $_SESSION['user_id'];
+
+    // Call Lambda to get movies for this user
+    $ch = curl_init('https://cgtyjpqli6.execute-api.ap-southeast-2.amazonaws.com/dev/?user_id='.$user_id);
+    curl_setopt_array($ch, [
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_HTTPHEADER => [
+            'Content-Type: application/json',
+            'Accept: application/json'
+        ]
+    ]);
+
+    $response = curl_exec($ch);
+    $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+
+    $name = "";
+    $watched = "";
+
+    if ($httpcode !== 200) {
+        $errorMessage = "Failed to fetch movies";
         header("location: /v2/index.php");   
-        exit;                                       
+        exit;  
+    } else {
+        $movies = json_decode($response, true);
+        
+        // Find the specific movie from the user's movies
+        $movie = null;
+        foreach ($movies as $m) {
+            if ($m['movie_id'] == $movie_id) {
+                $movie = $m;
+                break;
+            }
+        }
+
+        if (!$movie) {
+            header("location: index.php");
+            exit;
+        }
+
+        $name = $movie['name'];
+        $watched = $movie['watched'];
     }
 
+    // if we don't have any data in the db, redirect user to index page
+    // if ( !$row ) {                   
+    //     header("location: /v2/index.php");   
+    //     exit;                                       
+    // }
+
     // otherwise, we read the data from the database. then display in the form
-    $name = $row["name"];
-    $watched = $row["watched"];
+    // $name = $row["name"];
+    // $watched = $row["watched"];
 }
 else {
     // POST method: update data of the movie
@@ -64,19 +108,6 @@ else {
             $errorMessage = "All the fields are required.";
             break;
         }
-        
-        // // update movie in database
-        // $sql = "UPDATE movies " .
-        //         "SET name = '$name', watched = '$watched' " . 
-        //         "WHERE movie_id = $movie_id";
-
-        // $result = $connection->query($sql);
-
-        // // check if query is successful
-        // if (!$result) {
-        //     $errorMessage = "Invalid query: " . $connection->error;
-        //     break;
-        // }
 
         // Prepare the data to send to Lambda
         $data = [
