@@ -37,6 +37,10 @@ if ( $_SERVER['REQUEST_METHOD'] == 'POST') {
             break;
         }
         
+        if ( empty($user_id) ) {
+            $errorMessage = "User ID missing!"
+            break;
+        }
 
         // add new movie to database
         $sql = "INSERT INTO movies (name, watched, user_id) " .
@@ -64,7 +68,7 @@ if ( $_SERVER['REQUEST_METHOD'] == 'POST') {
         curl_setopt($ch, CURLOPT_HTTPHEADER, [
             'Content-Type: application/json'
         ]);
-
+        var_dump($data);
         $response = curl_exec($ch);
         $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
