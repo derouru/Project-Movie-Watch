@@ -17,6 +17,9 @@ $database = "mymovies";
 // creating connection
 $connection = new mysqli($servername, $username, $password, $database);
 
+// Debug the session user_id
+error_log("User ID from session: " . $_SESSION['user_id']);
+
 $name = "";
 $watched = "";
 $user_id = $_SESSION['user_id'];
@@ -37,14 +40,10 @@ if ( $_SERVER['REQUEST_METHOD'] == 'POST') {
             break;
         }
         
-        if ( empty($user_id) ) {
-            $errorMessage = "User ID missing!"
-            break;
-        }
 
         // add new movie to database
-        $sql = "INSERT INTO movies (name, watched, user_id) " .
-                "VALUES ('$name', '$watched', '$user_id')";
+        // $sql = "INSERT INTO movies (name, watched, user_id) " .
+        //         "VALUES ('$name', '$watched', '$user_id')";
         // $result = $connection->query($sql);
 
 
@@ -58,8 +57,11 @@ if ( $_SERVER['REQUEST_METHOD'] == 'POST') {
         $data = [
             'name' => $name,
             'watched' => $watched,
-            'user_id' => $user_id
+            'user_id' => (int)$user_id
         ];
+
+        // Add error logging for the API request
+        error_log("Sending to Lambda: " . print_r($data, true));
 
         $ch = curl_init('https://cgtyjpqli6.execute-api.ap-southeast-2.amazonaws.com/dev');
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -68,7 +70,7 @@ if ( $_SERVER['REQUEST_METHOD'] == 'POST') {
         curl_setopt($ch, CURLOPT_HTTPHEADER, [
             'Content-Type: application/json'
         ]);
-        var_dump($data);
+
         $response = curl_exec($ch);
         $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
