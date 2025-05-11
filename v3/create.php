@@ -39,19 +39,6 @@ if ( $_SERVER['REQUEST_METHOD'] == 'POST') {
             $errorMessage = "All the fields are required.";
             break;
         }
-        
-
-        // add new movie to database
-        // $sql = "INSERT INTO movies (name, watched, user_id) " .
-        //         "VALUES ('$name', '$watched', '$user_id')";
-        // $result = $connection->query($sql);
-
-
-        // check if query is successful
-        // if (!$result) {
-        //     $errorMessage = "Invalid query: " . $connection->error;
-        //     break;
-        // }
 
         // Prepare the data to send to Lambda
         $data = [
@@ -77,7 +64,7 @@ if ( $_SERVER['REQUEST_METHOD'] == 'POST') {
         echo '<pre>';
         print_r([
             'Request Headers' => curl_getinfo($ch, CURLINFO_HEADER_OUT),
-            'Request Body' => $jsonPayload, // From Method 1
+            'Request Body' => $data, // From Method 1
             'Response' => $response
         ]);
         echo '</pre>';
